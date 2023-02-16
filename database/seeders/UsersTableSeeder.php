@@ -20,8 +20,9 @@ class UsersTableSeeder extends Seeder
             'email' => 'ferchofff@gmail.com',
             'password' => bcrypt('password'),
             'english_level' => 'B2',
-            'knowledge' => 'I know everything',
+            'knowledge' => 'The more I know the less I undestand',
             'link_cv' => 'http://localhost/',
+            'role' => 'superadmin',
         ]);
     }
 }

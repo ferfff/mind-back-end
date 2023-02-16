@@ -17,4 +17,4 @@ use Illuminate\Support\Facades\Route;
     return view('welcome');
 });*/
 
-Route::view('/swagger', 'swagger');
+//Route::view('/swagger', 'swagger');

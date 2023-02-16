@@ -4,7 +4,7 @@
         "title": "L5 OpenApi",
         "description": "L5 Swagger OpenApi description",
         "contact": {
-            "email": "darius@matulionis.lt"
+            "email": "fernando.maldonado@arkusnexus.com"
         },
         "license": {
             "name": "Apache 2.0",
@@ -121,6 +121,10 @@
                                     "link_cv": {
                                         "type": "string",
                                         "format": "url"
+                                    },
+                                    "role": {
+                                        "type": "string",
+                                        "format": "string"
                                     }
                                 },
                                 "type": "object"
@@ -194,6 +198,104 @@
                         "bearerAuth": []
                     }
                 ]
+            }
+        },
+        "/api/refresh": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Refresh",
+                "description": "Refresh bearer token",
+                "operationId": "authrefresh",
+                "responses": {
+                    "200": {
+                        "description": "refresh succesfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string"
+                                        },
+                                        "user": {
+                                            "type": "string"
+                                        },
+                                        "authorization": {
+                                            "type": "json"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/users": {
+            "get": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "get all users",
+                "description": "Get user info",
+                "operationId": "getAllUsers",
+                "responses": {
+                    "200": {
+                        "description": "Get users success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string"
+                                        },
+                                        "users": {
+                                            "type": "json"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/{id}": {
+            "get": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "users",
+                "description": "Get user info",
+                "operationId": "getUserById",
+                "responses": {
+                    "200": {
+                        "description": "Get user success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string"
+                                        },
+                                        "user": {
+                                            "type": "json"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     },

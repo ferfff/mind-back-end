@@ -9,10 +9,10 @@ use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
-
     public function __construct()
     {
         $this->middleware('auth:api', ['except' => ['login']]);
+        $this->middleware('isAdmin', ['only' => ['register']]);
     }
 
     /**
@@ -60,7 +60,7 @@ class AuthController extends Controller
 
         $token = Auth::attempt($credentials);
         if (!$token) {
-            Log::error('Try to login by unauthorized user');
+            Log::info('Try to login by unauthorized user');
             return response()->json([
                 'status' => 'error',
                 'message' => 'Unauthorized',
@@ -98,6 +98,7 @@ class AuthController extends Controller
      *       @OA\Property(property="knowledge", type="string", format="string"),
      *       @OA\Property(property="english_level", type="string", format="string"),
      *       @OA\Property(property="link_cv", type="string", format="url"),
+     *       @OA\Property(property="role", type="string", format="string"),
      *    ),
      * ),
      * @OA\Response(
@@ -119,14 +120,34 @@ class AuthController extends Controller
             'password' => 'required|string|min:6',
         ]);
 
-        $user = User::create([
+        $user = Auth::user();
+        $roleCreated = $request->role;
+        
+        if ($user->isAdmin() && $roleCreated == env('ROLE_SUPERADMIN')) {
+            Log::info('Tried to create a super admin by '. Auth::user());
+            return response()->json([
+                'status' => 'error',
+                'message' => 'You are not authorized for this action',
+            ], 401);
+        }
+
+        $newuser = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'english_level' => $request->english_level,
             'knowledge' => $request->knowledge,
             'link_cv' => $request->link_cv,
+            'role' => $roleCreated,
         ]);
+
+        if (!$newuser) {
+            Log::error('Issue creating new user '. Auth::user());
+            return response()->json([
+                'status' => 'error',
+                'message' => 'There is no possible to create this user',
+            ], 401);
+        }
 
         Log::info('New user created by'. Auth::user());
         
@@ -170,6 +191,26 @@ class AuthController extends Controller
         ]);        
     }
 
+    /**
+     * @OA\Post(
+     * path="/api/refresh",
+     * summary="Refresh",
+     * description="Refresh bearer token",
+     * operationId="authrefresh",
+     * tags={"auth"},
+     * security={{"bearerAuth":{}}},
+     * @OA\Response(
+     *    response=200,
+     *    description="refresh succesfully",
+     *    @OA\JsonContent(
+     *       @OA\Property(property="status", type="string"),
+     *       @OA\Property(property="user", type="string"),
+     *       @OA\Property(property="authorization", type="json")
+     *     )
+     *    )
+     * )
+     * )
+     */
     public function refresh()
     {
         Log::info('Token Refreshed by'. Auth::user());
@@ -183,5 +224,4 @@ class AuthController extends Controller
             ]
         ]);
     }
-
 }

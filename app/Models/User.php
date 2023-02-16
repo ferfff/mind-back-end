@@ -26,6 +26,7 @@ class User extends Authenticatable implements JWTSubject
         'english_level',
         'knowledge',
         'link_cv',
+        'role',
     ];
 
     /**
@@ -75,5 +76,15 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    public function isSuperAdmin()
+    {
+        return ($this->role === env('ROLE_SUPERADMIN'));
+    }
+
+    public function isAdmin()
+    {
+        return ($this->role === env('ROLE_ADMIN'));
     }
 }
