@@ -29,8 +29,17 @@ Route::controller(AuthController::class)->group(function () {
 });
 
 Route::controller(UserController::class)->group(function () {
-    Route::get('user/index', 'index');
-    Route::get('user/show', 'show');
-    Route::put('user/update', 'update');
-    Route::post('user/store', 'store');
+    Route::get('users/index', 'index');
+    Route::get('users/show', 'show');
+    Route::put('users/update', 'update');
+    Route::delete('users/delete', 'destroy');
+    Route::get('users/getinfo', 'getinfo');
+});
+
+Route::controller(AccountsController::class)->group(function () {
+    Route::get('accounts/index', 'index');
+    Route::get('accounts/show', 'show');
+    Route::put('accounts/update', 'update');
+    Route::delete('accounts/delete', 'destroy');
+    Route::get('accounts/create', 'create');
 });

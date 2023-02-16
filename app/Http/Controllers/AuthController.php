@@ -12,13 +12,13 @@ class AuthController extends Controller
     public function __construct()
     {
         $this->middleware('auth:api', ['except' => ['login']]);
-        $this->middleware('isAdmin', ['only' => ['register']]);
+        $this->middleware('isSuperadmin', ['only' => ['register']]);
     }
 
     /**
      * @OA\Post(
      * path="/api/login",
-     * summary="Sign in",
+     * summary="Log in",
      * description="Login by email, password",
      * operationId="authLogin",
      * tags={"auth"},
@@ -82,8 +82,8 @@ class AuthController extends Controller
     /**
      * @OA\Post(
      * path="/api/register",
-     * summary="Register new user",
-     * description="Create a new user",
+     * summary="Create new user by super admins",
+     * description="Create a new user, only super admins",
      * operationId="authRegister",
      * tags={"auth"},
      * security={{"bearerAuth":{}}},
@@ -115,7 +115,7 @@ class AuthController extends Controller
      */
     public function register(Request $request){
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:100',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6',
         ]);
@@ -131,7 +131,7 @@ class AuthController extends Controller
             ], 401);
         }
 
-        $newuser = User::create([
+        $newUser = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
@@ -141,7 +141,7 @@ class AuthController extends Controller
             'role' => $roleCreated,
         ]);
 
-        if (!$newuser) {
+        if (!$newUser) {
             Log::error('Issue creating new user '. Auth::user());
             return response()->json([
                 'status' => 'error',
@@ -161,7 +161,7 @@ class AuthController extends Controller
     /**
      * @OA\Post(
      * path="/api/logout",
-     * summary="Logout",
+     * summary="Log out",
      * description="Delete bearer token",
      * operationId="authLogout",
      * tags={"auth"},
@@ -194,7 +194,7 @@ class AuthController extends Controller
     /**
      * @OA\Post(
      * path="/api/refresh",
-     * summary="Refresh",
+     * summary="Refresh Token",
      * description="Refresh bearer token",
      * operationId="authrefresh",
      * tags={"auth"},

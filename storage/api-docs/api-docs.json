@@ -16,12 +16,246 @@
         }
     },
     "paths": {
+        "/api/acounts": {
+            "get": {
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Get all accounts active",
+                "description": "Get account info",
+                "operationId": "getAllAccounts",
+                "responses": {
+                    "200": {
+                        "description": "Get users success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string"
+                                        },
+                                        "users": {
+                                            "type": "json"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/accounts/create": {
+            "post": {
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Create new account",
+                "description": "Create new account, only admins",
+                "operationId": "authAccountCreate",
+                "requestBody": {
+                    "description": "Pass account credentials",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "format": "name",
+                                        "example": "name Account"
+                                    },
+                                    "customer": {
+                                        "type": "string",
+                                        "format": "string"
+                                    },
+                                    "responsible": {
+                                        "type": "integer",
+                                        "format": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "User Created succesfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "user": {
+                                            "type": "json"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/accounts/{id}": {
+            "get": {
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Get Account by id",
+                "description": "Get account info",
+                "operationId": "getAccountInfo",
+                "responses": {
+                    "200": {
+                        "description": "Get user success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string"
+                                        },
+                                        "user": {
+                                            "type": "json"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/accounts/update": {
+            "put": {
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Update account",
+                "description": "Update account only admins",
+                "operationId": "authUpdateaccount",
+                "requestBody": {
+                    "description": "Pass user credentials",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "user1@mail.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "PassWord12345"
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "format": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "User Created succesfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "user": {
+                                            "type": "json"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/accounts/destroy": {
+            "delete": {
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Delete acount",
+                "description": "Delete acount logically",
+                "operationId": "authAccountDelete",
+                "responses": {
+                    "200": {
+                        "description": "User deleted succesfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/login": {
             "post": {
                 "tags": [
                     "auth"
                 ],
-                "summary": "Sign in",
+                "summary": "Log in",
                 "description": "Login by email, password",
                 "operationId": "authLogin",
                 "requestBody": {
@@ -81,8 +315,8 @@
                 "tags": [
                     "auth"
                 ],
-                "summary": "Register new user",
-                "description": "Create a new user",
+                "summary": "Create new user by super admins",
+                "description": "Create a new user, only super admins",
                 "operationId": "authRegister",
                 "requestBody": {
                     "description": "Pass user credentials",
@@ -167,7 +401,7 @@
                 "tags": [
                     "auth"
                 ],
-                "summary": "Logout",
+                "summary": "Log out",
                 "description": "Delete bearer token",
                 "operationId": "authLogout",
                 "requestBody": {
@@ -205,7 +439,7 @@
                 "tags": [
                     "auth"
                 ],
-                "summary": "Refresh",
+                "summary": "Refresh Token",
                 "description": "Refresh bearer token",
                 "operationId": "authrefresh",
                 "responses": {
@@ -241,10 +475,10 @@
         "/api/users": {
             "get": {
                 "tags": [
-                    "auth"
+                    "users"
                 ],
-                "summary": "get all users",
-                "description": "Get user info",
+                "summary": "Get all users active",
+                "description": "Get all user information, only admins",
                 "operationId": "getAllUsers",
                 "responses": {
                     "200": {
@@ -265,16 +499,21 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
-        "/api/user/{id}": {
+        "/api/users/{id}": {
             "get": {
                 "tags": [
-                    "auth"
+                    "users"
                 ],
-                "summary": "users",
-                "description": "Get user info",
+                "summary": "Get user by id",
+                "description": "Get any user info by id",
                 "operationId": "getUserById",
                 "responses": {
                     "200": {
@@ -295,7 +534,147 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/users/update": {
+            "put": {
+                "tags": [
+                    "users"
+                ],
+                "summary": "Update user",
+                "description": "Update user, only admins",
+                "operationId": "authUpdateUser",
+                "requestBody": {
+                    "description": "Pass user credentials",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "user1@mail.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "PassWord12345"
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "format": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "User Created succesfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "user": {
+                                            "type": "json"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/users/getinfo": {
+            "get": {
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get user logged info",
+                "description": "get Info from your User",
+                "operationId": "authGetInfo",
+                "responses": {
+                    "200": {
+                        "description": "Info shown succesfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string"
+                                        },
+                                        "user": {
+                                            "type": "json"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/users/destroy": {
+            "delete": {
+                "tags": [
+                    "users"
+                ],
+                "summary": "Delete user",
+                "description": "Delete user logically",
+                "operationId": "authDelete",
+                "responses": {
+                    "200": {
+                        "description": "User deleted succesfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         }
     },
