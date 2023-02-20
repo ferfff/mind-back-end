@@ -254,9 +254,9 @@ class AccountsController extends Controller
      * security={{"bearerAuth":{}}},
      * @OA\RequestBody(
      *    required=true,
-     *    description="Accounts values",
+     *    description="Users information",
      *    @OA\JsonContent(
-     *       @OA\Property(property="userstoadd", type="json", example="{"1":{"start_date":"2023-02-25","end_date":"2023-02-28"}"),
+     *       @OA\Property(property="userstoadd", type="users", example="{""1"":{""start_date"":""2023-02-25"",""end_date"":""2023-02-28""}")
      *    ),
      * ),
      * @OA\Response(
@@ -265,7 +265,7 @@ class AccountsController extends Controller
      *    @OA\JsonContent(
      *       @OA\Property(property="status", type="string"),
      *       @OA\Property(property="message", type="string"),
-     *       @OA\Property(property="user", type="json")
+     *       @OA\Property(property="accounts", format="application/json")
      *     )
      *    )
      * )
@@ -309,6 +309,33 @@ class AccountsController extends Controller
         ]);
     }
 
+    /**
+     * @OA\Put(
+     * path="/api/accounts/remove_users/{id}",
+     * summary="Remove account members",
+     * description="Remove account members only admins",
+     * operationId="authRemoveaccountMembers",
+     * tags={"accounts"},
+     * security={{"bearerAuth":{}}},
+     * @OA\RequestBody(
+     *    required=true,
+     *    description="Users ids",
+     *    @OA\JsonContent(
+     *       @OA\Property(property="userstoremove", type="string", example="2,3,5"),
+     *    ),
+     * ),
+     * @OA\Response(
+     *    response=200,
+     *    description="Users removed succesfully",
+     *    @OA\JsonContent(
+     *       @OA\Property(property="status", type="string"),
+     *       @OA\Property(property="message", type="string"),
+     *       @OA\Property(property="accounts", type="json")
+     *     )
+     *    )
+     * )
+     * )
+     */
     public function removeUsersFromAccount(Request $request, $id)
     {
         $users = explode(',', $request->userstoremove);

@@ -34,7 +34,7 @@
                                         "status": {
                                             "type": "string"
                                         },
-                                        "users": {
+                                        "accounts": {
                                             "type": "json"
                                         }
                                     },
@@ -125,7 +125,7 @@
                 "operationId": "getAccountInfo",
                 "responses": {
                     "200": {
-                        "description": "Get user success",
+                        "description": "Get account success",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -133,7 +133,7 @@
                                         "status": {
                                             "type": "string"
                                         },
-                                        "user": {
+                                        "account": {
                                             "type": "json"
                                         }
                                     },
@@ -150,7 +150,7 @@
                 ]
             }
         },
-        "/api/accounts/update": {
+        "/api/accounts/update/{id}": {
             "put": {
                 "tags": [
                     "accounts"
@@ -159,25 +159,24 @@
                 "description": "Update account only admins",
                 "operationId": "authUpdateaccount",
                 "requestBody": {
-                    "description": "Pass user credentials",
+                    "description": "Accounts values",
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
                                 "properties": {
-                                    "email": {
-                                        "type": "string",
-                                        "format": "email",
-                                        "example": "user1@mail.com"
-                                    },
-                                    "password": {
-                                        "type": "string",
-                                        "format": "password",
-                                        "example": "PassWord12345"
-                                    },
                                     "name": {
                                         "type": "string",
+                                        "format": "name",
+                                        "example": "name Account"
+                                    },
+                                    "customer": {
+                                        "type": "string",
                                         "format": "string"
+                                    },
+                                    "responsible": {
+                                        "type": "integer",
+                                        "format": "integer"
                                     }
                                 },
                                 "type": "object"
@@ -215,7 +214,7 @@
                 ]
             }
         },
-        "/api/accounts/destroy": {
+        "/api/accounts/destroy/{id}de": {
             "delete": {
                 "tags": [
                     "accounts"
@@ -235,6 +234,116 @@
                                         },
                                         "message": {
                                             "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/accounts/add_users/{id}": {
+            "put": {
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Add account members",
+                "description": "Add account members only admins",
+                "operationId": "authAddaccountMembers",
+                "requestBody": {
+                    "description": "Users information",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "userstoadd": {
+                                        "type": "users",
+                                        "example": "{\"1\":{\"start_date\":\"2023-02-25\",\"end_date\":\"2023-02-28\"}"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "User Created succesfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "accounts": {
+                                            "format": "application/json"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/accounts/remove_users/{id}": {
+            "put": {
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Remove account members",
+                "description": "Remove account members only admins",
+                "operationId": "authRemoveaccountMembers",
+                "requestBody": {
+                    "description": "Users ids",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "userstoremove": {
+                                        "type": "string",
+                                        "example": "2,3,5"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Users removed succesfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "accounts": {
+                                            "type": "json"
                                         }
                                     },
                                     "type": "object"
