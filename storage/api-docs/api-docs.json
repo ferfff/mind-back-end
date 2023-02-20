@@ -472,7 +472,7 @@
                 ]
             }
         },
-        "/api/users": {
+        "/api/users/index": {
             "get": {
                 "tags": [
                     "users"
@@ -507,7 +507,7 @@
                 ]
             }
         },
-        "/api/users/{id}": {
+        "/api/users/show/{id}": {
             "get": {
                 "tags": [
                     "users"
@@ -542,7 +542,7 @@
                 ]
             }
         },
-        "/api/users/update": {
+        "/api/users/update/{id}": {
             "put": {
                 "tags": [
                     "users"
@@ -642,7 +642,7 @@
                 ]
             }
         },
-        "/api/users/destroy": {
+        "/api/users/destroy/{id}": {
             "delete": {
                 "tags": [
                     "users"

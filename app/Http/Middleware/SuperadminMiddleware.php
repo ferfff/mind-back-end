@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class SuperadminMiddleware
 {
@@ -17,12 +18,13 @@ class SuperadminMiddleware
     public function handle(Request $request, Closure $next)
     {
         $superAdminRole = env('ROLE_SUPERADMIN');
+        $user = auth()->user();
 
-        if (Auth::check() && Auth::user()->role == $superAdminRole) {
+        if ($user->role == $superAdminRole) {
             return $next($request);
          }
 
-         Log::error('Access unauthorized '. Auth::user());
+         Log::error('Access unauthorized '. $user);
          return response()->json([
              'status' => 'error',
              'message' => 'Unauthorized',

@@ -2,8 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\User;
 use App\Models\Account;
+use App\Models\UserAccount;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class AccountsController extends Controller
 {
@@ -26,16 +31,28 @@ class AccountsController extends Controller
      *    description="Get users success",
      *    @OA\JsonContent(
      *       @OA\Property(property="status", type="string"),
-     *       @OA\Property(property="users", type="json"),
+     *       @OA\Property(property="accounts", type="json"),
      *     )
      *    )
      * )
      */
     public function index() {
-        $accounts = Account::where('active', true);
+        $accounts = Account::all()->reject(function ($account) {
+            return $account->active === false;
+        })->map(function ($account) {
+            return $account;
+        });
+        
+        $result = [];
+        foreach($accounts as $account) {
+            $result[$account->id]['name'] = $account->name;
+            $result[$account->id]['responsible'] = $account->responsible()->get()
+                ->map->only(['id', 'name']);
+        }
+
         return response()->json([
             'status' => 'success',
-            'accounts' => $accounts,
+            'accounts' => $result,
         ]);
     }
 
@@ -68,31 +85,33 @@ class AccountsController extends Controller
      * )
      * )
      */
-    public function create($id)
+    public function create(Request $request)
     {
         $request->validate([
             'name' => 'required|string|max:100',
             'customer' => 'required|string|max:100',
+            'responsible' => 'required|integer',
         ]);
-
+        
         $newAccount = Account::create([
             'name' => $request->name,
             'customer' => $request->customer,
             'responsible' => $request->responsible,
-            'active' => $request->english_level,
             'created_at' => now(),
             'active' => true,
         ]);
 
+        $user = Auth::user();
+
         if (!$newAccount) {
-            Log::error('Issue creating new account '. Auth::user());
+            Log::error('Issue creating new account '. $user->id);
             return response()->json([
                 'status' => 'error',
                 'message' => 'There is no possible to create this user',
             ], 401);
         }
 
-        Log::info('New account created by'. Auth::user());
+        Log::info('New account created by'. $user->id);
         
         return response()->json([
             'status' => 'success',
@@ -112,39 +131,38 @@ class AccountsController extends Controller
      * @OA\Property(property="id", type="integer"),
      * @OA\Response(
      *    response=200,
-     *    description="Get user success",
+     *    description="Get account success",
      *    @OA\JsonContent(
      *       @OA\Property(property="status", type="string"),
-     *       @OA\Property(property="user", type="json"),
+     *       @OA\Property(property="account", type="json"),
      *     )
      *    )
      * )
      */
     public function show($id)
     {
-        $user = Account::find($id)->where('active', 1);
+        $account = Account::where('id', $id)->first();
 
-        if (!$user) {
+        if (!$account) {
             Log::error('Error requesting information by'. Auth::user() . ' of ' . $id);
             return response()->json([
                 'status' => 'error',
-                'message' => 'There is no possible to get this user info',
+                'message' => 'There is no possible to get this account info',
             ], 401);
         }
 
         Log::info('Requested information by'. Auth::user() . ' of ' . $id);
+        $result = $this->getAccountResult($id);
+
         return response()->json([
             'status' => 'success',
-            'user' => [
-                'name' => $user->name,
-                'email' => $user->email,
-            ],
+            'accounts' => $result,
         ]);
     }
 
     /**
      * @OA\Put(
-     * path="/api/accounts/update",
+     * path="/api/accounts/update/{id}",
      * summary="Update account",
      * description="Update account only admins",
      * operationId="authUpdateaccount",
@@ -152,11 +170,11 @@ class AccountsController extends Controller
      * security={{"bearerAuth":{}}},
      * @OA\RequestBody(
      *    required=true,
-     *    description="Pass user credentials",
+     *    description="Accounts values",
      *    @OA\JsonContent(
-     *       @OA\Property(property="email", type="string", format="email", example="user1@mail.com"),
-     *       @OA\Property(property="password", type="string", format="password", example="PassWord12345"),
-     *       @OA\Property(property="name", type="string", format="string"),
+     *       @OA\Property(property="name", type="string", format="name", example="name Account"),
+     *       @OA\Property(property="customer", type="string", format="string"),
+     *       @OA\Property(property="responsible", type="integer", format="integer"),
      *    ),
      * ),
      * @OA\Response(
@@ -173,9 +191,15 @@ class AccountsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $user = Account::whereId($id)->update($request->all());
+        $request->validate([
+            'name' => 'required|string|max:100',
+            'customer' => 'required|string|max:100',
+            'responsible' => 'required|integer',
+        ]);
 
-        if (!$user) {
+        $account = Account::whereId($id)->update($request->all());
+
+        if (!$account) {
             Log::error('Error requesting information by'. Auth::user() . ' of ' . $id);
             return response()->json([
                 'status' => 'error',
@@ -186,16 +210,13 @@ class AccountsController extends Controller
         Log::info('Requested information by'. Auth::user() . ' of ' . $id);
         return response()->json([
             'status' => 'success',
-            'user' => [
-                'name' => $user->name,
-                'email' => $user->email,
-            ],
+            'account' => Account::where('id', $id)->get(),
         ]);
     }
 
     /**
      * @OA\Delete(
-     * path="/api/accounts/destroy",
+     * path="/api/accounts/destroy/{id}de",
      * summary="Delete acount",
      * description="Delete acount logically",
      * operationId="authAccountDelete",
@@ -219,12 +240,117 @@ class AccountsController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'User deleted successfully',
+            'message' => 'Account deleted successfully',
         ]);
     }
 
+    /**
+     * @OA\Put(
+     * path="/api/accounts/add_users/{id}",
+     * summary="Add account members",
+     * description="Add account members only admins",
+     * operationId="authAddaccountMembers",
+     * tags={"accounts"},
+     * security={{"bearerAuth":{}}},
+     * @OA\RequestBody(
+     *    required=true,
+     *    description="Accounts values",
+     *    @OA\JsonContent(
+     *       @OA\Property(property="userstoadd", type="json", example="{"1":{"start_date":"2023-02-25","end_date":"2023-02-28"}"),
+     *    ),
+     * ),
+     * @OA\Response(
+     *    response=200,
+     *    description="User Created succesfully",
+     *    @OA\JsonContent(
+     *       @OA\Property(property="status", type="string"),
+     *       @OA\Property(property="message", type="string"),
+     *       @OA\Property(property="user", type="json")
+     *     )
+     *    )
+     * )
+     * )
+     */
     public function addUsersToAccount(Request $request, $id)
     {
+        $users = json_decode($request->userstoadd, true);
         
+        DB::transaction(function() use ($users, $id) {
+            foreach($users as $idUser => $usertoadd) {
+                $user = User::find($idUser);
+                if ($user) {
+                    $usersAccounts = DB::table('users_accounts')
+                    ->where('user_id', '=', $idUser)
+                    ->where('account_id', '=', $id)
+                    ->where('active', '=', true)
+                    ->get();
+
+                    if($usersAccounts) {
+                        UserAccount::create([
+                            'created_at' => now(),
+                            'user_id' => $user->id,
+                            'account_id' => $id,
+                            'active' => true,
+                            'start_date' => $usertoadd['start_date'],
+                            'end_date' => $usertoadd['end_date'],
+                        ]);
+                    }
+                }
+            }
+        });
+
+        Log::info('Added members by'. Auth::user() . ' of ' . $id);
+        $result = $this->getAccountResult($id);
+        
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Account updated successfully',
+            'accounts' => $result,
+        ]);
+    }
+
+    public function removeUsersFromAccount(Request $request, $id)
+    {
+        $users = explode(',', $request->userstoremove);
+
+        $deleted = DB::table('users_accounts')
+            ->where('account_id', '=', $id)
+            ->where('active', '=', true)
+            ->whereIn('user_id', $users)
+            ->update([
+                'active' => false,
+            ]);
+
+        if(!$deleted) {
+            Log::error('Error deleting '. $request->userstoremove . ' of account ' . $id);
+            return response()->json([
+                'status' => 'error',
+                'message' => 'There is no possible to delete this users from account',
+            ], 401);
+        }
+
+        Log::info('Requested information by'. Auth::user() . ' of ' . $id);
+        $result = $this->getAccountResult($id);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Account updated successfully',
+            'accounts' => $result,
+        ]);
+    }
+
+    private function getAccountResult($id)
+    {
+        $result = [];
+        $account = Account::where('id', $id)->first();
+
+        $result['id'] = $account->id;
+        $result['name'] = $account->name;
+        $result['responsible'] = $account->responsible()->get()
+            ->map->only(['id', 'name']);
+        $result['members'] = $account->users()->where('users_accounts.active', true)->get()
+            ->map->only(['id', 'name']);
+
+        return $result;
     }
 }

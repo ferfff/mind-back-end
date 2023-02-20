@@ -1,10 +1,12 @@
 <?php
 
 namespace App\Http\Controllers;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -16,7 +18,7 @@ class UserController extends Controller
 
     /**
      * @OA\Get(
-     * path="/api/users",
+     * path="/api/users/index",
      * summary="Get all users active",
      * description="Get all user information, only admins",
      * operationId="getAllUsers",
@@ -34,7 +36,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::where('active', true);
+        $users = User::where('active', true)->get();
         return response()->json([
             'status' => 'success',
             'users' => $users,
@@ -43,7 +45,7 @@ class UserController extends Controller
 
     /**
      * @OA\Get(
-     * path="/api/users/{id}",
+     * path="/api/users/show/{id}",
      * summary="Get user by id",
      * description="Get any user info by id",
      * operationId="getUserById",
@@ -62,7 +64,7 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        $user = User::find($id)->where('active', 1);
+        $user = User::find($id);
 
         if (!$user) {
             Log::error('Error requesting information by'. Auth::user() . ' of ' . $id);
@@ -84,7 +86,7 @@ class UserController extends Controller
 
     /**
      * @OA\Put(
-     * path="/api/users/update",
+     * path="/api/users/update/{id}",
      * summary="Update user",
      * description="Update user, only admins",
      * operationId="authUpdateUser",
@@ -118,10 +120,16 @@ class UserController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6',
         ]);
+        
+        $affected = DB::table('users')
+                ->where('id', '=', $id)
+                ->update([
+                    'name' => $request->name,
+                    'email' => $request->email,
+                    'password' => Hash::make($request->password),
+                ]);
 
-        $user = User::whereId($id)->update($request->all());
-
-        if (!$user) {
+        if (!$affected) {
             Log::error('Error requesting information by'. Auth::user() . ' of ' . $id);
             return response()->json([
                 'status' => 'error',
@@ -133,8 +141,8 @@ class UserController extends Controller
         return response()->json([
             'status' => 'success',
             'user' => [
-                'name' => $user->name,
-                'email' => $user->email,
+                'name' => $request->name,
+                'email' => $request->email
             ],
         ]);
     }
@@ -166,18 +174,18 @@ class UserController extends Controller
         return response()->json([
             'status' => 'success',
             'user' => [
-                'name' => $user-$name,
-                'email' => $user-$email,
-                'english_level' => $user-$english_level,
-                'knowledge' => $user-$knowledge,
-                'link_cv' => $user-$link_cv,
+                'name' => $user->name,
+                'email' => $user->email,
+                'english_level' => $user->english_level,
+                'knowledge' => $user->knowledge,
+                'link_cv' => $user->link_cv,
             ],
         ]);
     }
 
     /**
      * @OA\Delete(
-     * path="/api/users/destroy",
+     * path="/api/users/destroy/{id}",
      * summary="Delete user",
      * description="Delete user logically",
      * operationId="authDelete",
@@ -196,8 +204,11 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        User::where('id', $id)
-            ->update(['active' => false]);
+        DB::table('users')
+                ->where('id','=',$id)
+                ->update([
+                    'active' => false,
+                ]);
 
         return response()->json([
             'status' => 'success',

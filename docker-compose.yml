@@ -52,14 +52,12 @@ services:
             - mysql
         image: phpmyadmin/phpmyadmin
         ports:
-            - 8000:80
+            - 8001:80
         environment:
             - PMA_HOST=mysql
             - PMA_PORT=3306
         networks:
             - sail
-        ports:
-            - 8001:80
 networks:
     sail:
         driver: bridge
