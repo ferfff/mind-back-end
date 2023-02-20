@@ -44,4 +44,6 @@ Route::controller(AccountsController::class)->group(function () {
     Route::delete('accounts/delete/{id}', 'destroy');
     Route::put('accounts/add_users/{id}', 'addUsersToAccount');
     Route::put('accounts/remove_users/{id}', 'removeUsersFromAccount');
+    Route::post('accounts/filter', 'getInformationFiltered');
+
 });

@@ -31,7 +31,7 @@ class AccountsController extends Controller
      *    description="Get users success",
      *    @OA\JsonContent(
      *       @OA\Property(property="status", type="string"),
-     *       @OA\Property(property="accounts", type="json"),
+     *       @OA\Property(property="accounts", type="object"),
      *     )
      *    )
      * )
@@ -79,7 +79,7 @@ class AccountsController extends Controller
      *    @OA\JsonContent(
      *       @OA\Property(property="status", type="string"),
      *       @OA\Property(property="message", type="string"),
-     *       @OA\Property(property="user", type="json")
+     *       @OA\Property(property="user", type="object")
      *     )
      *    )
      * )
@@ -134,7 +134,7 @@ class AccountsController extends Controller
      *    description="Get account success",
      *    @OA\JsonContent(
      *       @OA\Property(property="status", type="string"),
-     *       @OA\Property(property="account", type="json"),
+     *       @OA\Property(property="account", type="object"),
      *     )
      *    )
      * )
@@ -183,7 +183,7 @@ class AccountsController extends Controller
      *    @OA\JsonContent(
      *       @OA\Property(property="status", type="string"),
      *       @OA\Property(property="message", type="string"),
-     *       @OA\Property(property="user", type="json")
+     *       @OA\Property(property="user", type="object")
      *     )
      *    )
      * )
@@ -265,7 +265,7 @@ class AccountsController extends Controller
      *    @OA\JsonContent(
      *       @OA\Property(property="status", type="string"),
      *       @OA\Property(property="message", type="string"),
-     *       @OA\Property(property="accounts", format="application/json")
+     *       @OA\Property(property="accounts", type="object", format="application/json")
      *     )
      *    )
      * )
@@ -330,7 +330,7 @@ class AccountsController extends Controller
      *    @OA\JsonContent(
      *       @OA\Property(property="status", type="string"),
      *       @OA\Property(property="message", type="string"),
-     *       @OA\Property(property="accounts", type="json")
+     *       @OA\Property(property="accounts", type="object")
      *     )
      *    )
      * )
@@ -364,6 +364,63 @@ class AccountsController extends Controller
             'message' => 'Account updated successfully',
             'accounts' => $result,
         ]);
+    }
+
+    /**
+     * @OA\Post(
+     * path="/api/accounts/filter",
+     * summary="Get log movements",
+     * description="Get movements log, only admins",
+     * operationId="authAccountLog",
+     * tags={"accounts"},
+     * security={{"bearerAuth":{}}},
+     * @OA\RequestBody(
+     *    description="Search filter values",
+     *    @OA\JsonContent(
+     *       @OA\Property(property="user_id", type="integer", format="integer"),
+     *       @OA\Property(property="account_id", type="integer", format="integer"),
+     *       @OA\Property(property="start_date", type="date", format="yyyy-mm-dd", example="YYYY-MM-DD"),
+     *       @OA\Property(property="end_date", type="date", format="yyyy-mm-dd", example="YYYY-MM-DD"),
+     *    ),
+     * ),
+     * @OA\Response(
+     *    response=200,
+     *    description="User Created succesfully",
+     *    @OA\JsonContent(
+     *       @OA\Property(property="status", type="string"),
+     *       @OA\Property(property="total", type="integer"),
+     *       @OA\Property(property="log", type="object")
+     *     )
+     *    )
+     * )
+     * )
+     */
+    public function getInformationFiltered(Request $request)
+    {
+        $usersAccounts = DB::table('users_accounts')
+            ->join('users', 'users.id', '=', 'users_accounts.user_id')
+            ->join('accounts', 'accounts.id', '=', 'users_accounts.account_id')
+            ->select('users_accounts.start_date', 'users_accounts.end_date', 'users.name as username', 'accounts.name as accountname');
+
+        if ($request->has('account_id')) {
+            $usersAccounts->where('account_id', $request->account_id);
+        }
+        if ($request->has('user_id')) {
+            $usersAccounts->where('user_id', $request->user_id);
+        }
+        if ($request->has('start_date')) {
+            $usersAccounts->where('start_date', $request->start_date);
+        }
+        if ($request->has('end_date')) {
+            $usersAccounts->where('end_date', $request->end_date);
+        }
+        
+        return response()->json([
+            'status' => 'success',
+            'total' => $usersAccounts->count(),
+            'log' => $usersAccounts->get(),
+        ]);
+
     }
 
     private function getAccountResult($id)

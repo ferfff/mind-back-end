@@ -35,7 +35,7 @@
                                             "type": "string"
                                         },
                                         "accounts": {
-                                            "type": "json"
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
@@ -99,7 +99,7 @@
                                             "type": "string"
                                         },
                                         "user": {
-                                            "type": "json"
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
@@ -134,7 +134,7 @@
                                             "type": "string"
                                         },
                                         "account": {
-                                            "type": "json"
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
@@ -198,7 +198,7 @@
                                             "type": "string"
                                         },
                                         "user": {
-                                            "type": "json"
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
@@ -288,6 +288,7 @@
                                             "type": "string"
                                         },
                                         "accounts": {
+                                            "type": "object",
                                             "format": "application/json"
                                         }
                                     },
@@ -343,7 +344,75 @@
                                             "type": "string"
                                         },
                                         "accounts": {
-                                            "type": "json"
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/accounts/filter": {
+            "post": {
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Get log movements",
+                "description": "Get movements log, only admins",
+                "operationId": "authAccountLog",
+                "requestBody": {
+                    "description": "Search filter values",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "user_id": {
+                                        "type": "integer",
+                                        "format": "integer"
+                                    },
+                                    "account_id": {
+                                        "type": "integer",
+                                        "format": "integer"
+                                    },
+                                    "start_date": {
+                                        "type": "string",
+                                        "format": "yyyy-mm-dd",
+                                        "example": "YYYY-MM-DD"
+                                    },
+                                    "end_date": {
+                                        "type": "string",
+                                        "format": "yyyy-mm-dd",
+                                        "example": "YYYY-MM-DD"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "User Created succesfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string"
+                                        },
+                                        "total": {
+                                            "type": "integer"
+                                        },
+                                        "log": {
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
@@ -408,7 +477,7 @@
                                             "type": "json"
                                         },
                                         "authorization": {
-                                            "type": "json"
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
@@ -489,7 +558,7 @@
                                             "type": "string"
                                         },
                                         "user": {
-                                            "type": "json"
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
@@ -565,7 +634,7 @@
                                             "type": "string"
                                         },
                                         "authorization": {
-                                            "type": "json"
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
@@ -600,7 +669,7 @@
                                             "type": "string"
                                         },
                                         "users": {
-                                            "type": "json"
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
@@ -635,7 +704,7 @@
                                             "type": "string"
                                         },
                                         "user": {
-                                            "type": "json"
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
@@ -700,7 +769,7 @@
                                             "type": "string"
                                         },
                                         "user": {
-                                            "type": "json"
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
@@ -735,7 +804,7 @@
                                             "type": "string"
                                         },
                                         "user": {
-                                            "type": "json"
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"

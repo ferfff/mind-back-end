@@ -37,7 +37,7 @@ class AuthController extends Controller
      *    @OA\JsonContent(
      *       @OA\Property(property="status", type="string"),
      *       @OA\Property(property="user", type="json"),
-     *       @OA\Property(property="authorization", type="json")
+     *       @OA\Property(property="authorization", type="object")
      *     )
      *    )
      * ),
@@ -107,7 +107,7 @@ class AuthController extends Controller
      *    @OA\JsonContent(
      *       @OA\Property(property="status", type="string"),
      *       @OA\Property(property="message", type="string"),
-     *       @OA\Property(property="user", type="json")
+     *       @OA\Property(property="user", type="object")
      *     )
      *    )
      * )
@@ -205,7 +205,7 @@ class AuthController extends Controller
      *    @OA\JsonContent(
      *       @OA\Property(property="status", type="string"),
      *       @OA\Property(property="user", type="string"),
-     *       @OA\Property(property="authorization", type="json")
+     *       @OA\Property(property="authorization", type="object")
      *     )
      *    )
      * )

@@ -29,7 +29,7 @@ class UserController extends Controller
      *    description="Get users success",
      *    @OA\JsonContent(
      *       @OA\Property(property="status", type="string"),
-     *       @OA\Property(property="users", type="json"),
+     *       @OA\Property(property="users", type="object"),
      *     )
      *    )
      * )
@@ -57,7 +57,7 @@ class UserController extends Controller
      *    description="Get user success",
      *    @OA\JsonContent(
      *       @OA\Property(property="status", type="string"),
-     *       @OA\Property(property="user", type="json"),
+     *       @OA\Property(property="user", type="object"),
      *     )
      *    )
      * )
@@ -107,7 +107,7 @@ class UserController extends Controller
      *    @OA\JsonContent(
      *       @OA\Property(property="status", type="string"),
      *       @OA\Property(property="message", type="string"),
-     *       @OA\Property(property="user", type="json")
+     *       @OA\Property(property="user", type="object")
      *     )
      *    )
      * )
@@ -160,7 +160,7 @@ class UserController extends Controller
      *    description="Info shown succesfully",
      *    @OA\JsonContent(
      *       @OA\Property(property="status", type="string"),
-     *       @OA\Property(property="user", type="json")
+     *       @OA\Property(property="user", type="object")
      *     )
      *    )
      * )
