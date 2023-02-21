@@ -612,44 +612,6 @@
                 ]
             }
         },
-        "/api/refresh": {
-            "post": {
-                "tags": [
-                    "auth"
-                ],
-                "summary": "Refresh Token",
-                "description": "Refresh bearer token",
-                "operationId": "authrefresh",
-                "responses": {
-                    "200": {
-                        "description": "refresh succesfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "string"
-                                        },
-                                        "user": {
-                                            "type": "string"
-                                        },
-                                        "authorization": {
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            }
-        },
         "/api/users/index": {
             "get": {
                 "tags": [
