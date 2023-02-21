@@ -120,17 +120,8 @@ class AuthController extends Controller
             'password' => 'required|string|min:6',
         ]);
 
-        $user = Auth::user();
         $roleCreated = $request->role;
         
-        if ($user->isAdmin() && $roleCreated == env('ROLE_SUPERADMIN')) {
-            Log::info('Tried to create a super admin by '. Auth::user());
-            return response()->json([
-                'status' => 'error',
-                'message' => 'You are not authorized for this action',
-            ], 401);
-        }
-
         $newUser = User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -140,14 +131,6 @@ class AuthController extends Controller
             'link_cv' => $request->link_cv,
             'role' => $roleCreated,
         ]);
-
-        if (!$newUser) {
-            Log::error('Issue creating new user '. Auth::user());
-            return response()->json([
-                'status' => 'error',
-                'message' => 'There is no possible to create this user',
-            ], 401);
-        }
 
         Log::info('New user created by'. Auth::user());
         
@@ -191,37 +174,4 @@ class AuthController extends Controller
         ]);        
     }
 
-    /**
-     * @OA\Post(
-     * path="/api/refresh",
-     * summary="Refresh Token",
-     * description="Refresh bearer token",
-     * operationId="authrefresh",
-     * tags={"auth"},
-     * security={{"bearerAuth":{}}},
-     * @OA\Response(
-     *    response=200,
-     *    description="refresh succesfully",
-     *    @OA\JsonContent(
-     *       @OA\Property(property="status", type="string"),
-     *       @OA\Property(property="user", type="string"),
-     *       @OA\Property(property="authorization", type="object")
-     *     )
-     *    )
-     * )
-     * )
-     */
-    public function refresh()
-    {
-        Log::info('Token Refreshed by'. Auth::user());
-
-        return response()->json([
-            'status' => 'success',
-            'user' => Auth::user(),
-            'authorization' => [
-                'token' => Auth::refresh(),
-                'type' => 'bearer',
-            ]
-        ]);
-    }
 }

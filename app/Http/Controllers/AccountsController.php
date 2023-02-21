@@ -102,21 +102,19 @@ class AccountsController extends Controller
         ]);
 
         $user = Auth::user();
-
-        if (!$newAccount) {
-            Log::error('Issue creating new account '. $user->id);
-            return response()->json([
-                'status' => 'error',
-                'message' => 'There is no possible to create this user',
-            ], 401);
-        }
-
         Log::info('New account created by'. $user->id);
+
+        $result = [];
+        $result['id'] = $newAccount->id;
+        $result['name'] = $newAccount->name;
+        $result['customer'] = $newAccount->customer;
+        $result['responsible'] = $newAccount->responsible()->get()
+            ->map->only(['id', 'name']);
         
         return response()->json([
             'status' => 'success',
             'message' => 'Account created successfully',
-            'account' => $newAccount,
+            'account' => $result,
         ]);
     }
 
@@ -210,7 +208,7 @@ class AccountsController extends Controller
         Log::info('Requested information by'. Auth::user() . ' of ' . $id);
         return response()->json([
             'status' => 'success',
-            'account' => Account::where('id', $id)->get(),
+            'account' => $this->getAccountResult($id),
         ]);
     }
 
@@ -300,12 +298,10 @@ class AccountsController extends Controller
         });
 
         Log::info('Added members by'. Auth::user() . ' of ' . $id);
-        $result = $this->getAccountResult($id);
-        
         return response()->json([
             'status' => 'success',
             'message' => 'Account updated successfully',
-            'accounts' => $result,
+            'account' => $this->getAccountResult($id),
         ]);
     }
 
@@ -357,12 +353,11 @@ class AccountsController extends Controller
         }
 
         Log::info('Requested information by'. Auth::user() . ' of ' . $id);
-        $result = $this->getAccountResult($id);
 
         return response()->json([
             'status' => 'success',
             'message' => 'Account updated successfully',
-            'accounts' => $result,
+            'account' => $this->getAccountResult($id),
         ]);
     }
 
@@ -430,6 +425,7 @@ class AccountsController extends Controller
 
         $result['id'] = $account->id;
         $result['name'] = $account->name;
+        $result['customer'] = $account->customer;
         $result['responsible'] = $account->responsible()->get()
             ->map->only(['id', 'name']);
         $result['members'] = $account->users()->where('users_accounts.active', true)->get()
