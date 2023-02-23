@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Account;
 use App\Models\UserAccount;
+use Illuminate\Http\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -38,15 +39,19 @@ class AccountsController extends Controller
      */
     public function index() {
         $accounts = Account::all()->reject(function ($account) {
-            return $account->active === false;
+            return $account->active == false;
         })->map(function ($account) {
             return $account;
         });
         
         $result = [];
         foreach($accounts as $account) {
+            $result[$account->id]['id'] = $account->id;
             $result[$account->id]['name'] = $account->name;
+            $result[$account->id]['customer'] = $account->customer;
             $result[$account->id]['responsible'] = $account->responsible()->get()
+                ->map->only(['id', 'name']);
+            $result[$account->id]['members'] = $account->users()->where('users_accounts.active', true)->get()
                 ->map->only(['id', 'name']);
         }
 
@@ -254,7 +259,9 @@ class AccountsController extends Controller
      *    required=true,
      *    description="Users information",
      *    @OA\JsonContent(
-     *       @OA\Property(property="userstoadd", type="users", example="{""1"":{""start_date"":""2023-02-25"",""end_date"":""2023-02-28""}")
+     *       @OA\Property(property="id", type="integer", example="1"),
+     *       @OA\Property(property="start_date", type="date", example="1"),
+     *       @OA\Property(property="end_date", type="date", example="1"),
      *    ),
      * ),
      * @OA\Response(
@@ -271,38 +278,40 @@ class AccountsController extends Controller
      */
     public function addUsersToAccount(Request $request, $id)
     {
-        $users = json_decode($request->userstoadd, true);
-        
-        DB::transaction(function() use ($users, $id) {
-            foreach($users as $idUser => $usertoadd) {
-                $user = User::find($idUser);
-                if ($user) {
-                    $usersAccounts = DB::table('users_accounts')
-                    ->where('user_id', '=', $idUser)
-                    ->where('account_id', '=', $id)
-                    ->where('active', '=', true)
-                    ->get();
-
-                    if($usersAccounts) {
-                        UserAccount::create([
-                            'created_at' => now(),
-                            'user_id' => $user->id,
-                            'account_id' => $id,
-                            'active' => true,
-                            'start_date' => $usertoadd['start_date'],
-                            'end_date' => $usertoadd['end_date'],
-                        ]);
-                    }
-                }
-            }
-        });
-
-        Log::info('Added members by'. Auth::user() . ' of ' . $id);
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Account updated successfully',
-            'account' => $this->getAccountResult($id),
+        $request->validate([
+            'id' => 'required|integer',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date',
         ]);
+
+        $account = UserAccount::where('active', true)
+            ->where('user_id', $request->id)
+            ->where('account_id', $id)
+            ->first();
+
+        if(!$account) {
+            UserAccount::create([
+                'created_at' => now(),
+                'user_id' => $request->id,
+                'account_id' => $id,
+                'active' => true,
+                'start_date' => $request->start_date,
+                'end_date' => $request->end_date,
+            ]);
+    
+            Log::info('Added members by'. Auth::user() . ' of ' . $id);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Account updated successfully',
+                'account' => $this->getAccountResult($id),
+            ]);
+        }
+
+        Log::error('User already in account ' . $id);
+        return response()->json([
+            'status' => 'error',
+            'message' => 'There is no possible to add this user',
+        ], Response::HTTP_UNAUTHORIZED);
     }
 
     /**

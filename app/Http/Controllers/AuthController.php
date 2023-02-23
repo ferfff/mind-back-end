@@ -1,11 +1,12 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use App\Models\User;
-use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
@@ -64,7 +65,7 @@ class AuthController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'Unauthorized',
-            ], 401);
+            ], Response::HTTP_UNAUTHORIZED);
         }
 
         $user = Auth::user();
