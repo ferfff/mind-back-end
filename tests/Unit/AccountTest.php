@@ -227,7 +227,9 @@ class AccountTest extends TestCase
         $response = $this->actingAs($this->user)
                     ->withSession(['banned' => false])
                     ->put('/api/accounts/add_users/2000', [
-                        'userstoadd' => '{"1002":{"start_date":"2023-02-25","end_date":"2023-02-28"}}',
+                        'id' => 1002,
+                        'start_date' => '2023-03-01',
+                        'end_date' => '2024-03-01',
                     ]);
 
         $response->assertStatus(Response::HTTP_OK)
@@ -245,6 +247,46 @@ class AccountTest extends TestCase
                         ['id' => 1001, 'name' => 'User fake'],
                     ]
                 ],
+            ]);
+    }
+
+    /**
+     * Accounts test unit add users to account.
+     *
+     * @return void
+     */
+    public function test_add_users_to_account_user_already_in_account()
+    {
+        User::factory()->create([
+            'id' => 1002,
+            'name' => 'Member fake',
+            'password' => 'passmemberfake',
+            'email' => 'fakememer@email.com',
+            'english_level' => 'A2',
+            'knowledge' => 'knowledge member',
+            'link_cv' => 'link_member_cv.com.mx',
+        ]);
+
+        $this->actingAs($this->user)
+                    ->withSession(['banned' => false])
+                    ->put('/api/accounts/add_users/2000', [
+                        'id' => 1002,
+                        'start_date' => '2023-03-01',
+                        'end_date' => '2024-03-01',
+                    ]);
+
+        $response = $this->actingAs($this->user)
+                    ->withSession(['banned' => false])
+                    ->put('/api/accounts/add_users/2000', [
+                        'id' => 1002,
+                        'start_date' => '2023-03-01',
+                        'end_date' => '2024-03-01',
+                    ]);
+
+        $response->assertStatus(Response::HTTP_UNAUTHORIZED)
+            ->assertExactJson([
+                'status' => 'error',
+                'message' => 'There is no possible to add this user',
             ]);
     }
 
@@ -268,7 +310,9 @@ class AccountTest extends TestCase
         $response = $this->actingAs($this->user)
                     ->withSession(['banned' => false])
                     ->put('/api/accounts/add_users/2000', [
-                        'userstoadd' => '{"1003":{"start_date":"2023-02-25","end_date":"2023-02-28"}}',
+                        'id' => 1003,
+                        'start_date' => '2023-03-01',
+                        'end_date' => '2024-03-01',
                     ]);
 
         $response = $this->actingAs($this->user)
@@ -333,7 +377,9 @@ class AccountTest extends TestCase
         $response = $this->actingAs($this->user)
                     ->withSession(['banned' => false])
                     ->put('/api/accounts/add_users/2000', [
-                        'userstoadd' => '{"1005":{"start_date":"2023-01-25","end_date":"2023-01-28"}}',
+                        'id' => 1005,
+                        'start_date' => '2023-01-25',
+                        'end_date' => '2023-01-28',
                     ]);
 
         $response = $this->actingAs($this->user)
@@ -341,8 +387,6 @@ class AccountTest extends TestCase
             ->post('/api/accounts/filter', [
                 'account_id' => '2000',
                 'user_id' => '1005',
-                'start_date' => '2023-01-25',
-                'end_date' => '2023-01-28',
             ]);
 
         $response->assertStatus(Response::HTTP_OK)
@@ -352,8 +396,8 @@ class AccountTest extends TestCase
                 'log' => [
                     [
                         'accountname' => 'account fake 2',
-                        'end_date' => '2023-01-28',
                         'start_date' => '2023-01-25',
+                        'end_date' => '2023-01-28',
                         'username' => 'Member fake5',
                     ]
                 ],
