@@ -18,7 +18,9 @@ Steps to run this app
 - In another console check docker images with `docker ps`
 - To run commands inside application run `exec -it {name of your image} /bin/bash` to get into a internal console
 - Run `composer install`.
+- Run `npm install`.
 - Run database migrations with `php artisan make:migration` (Super user is created by default in `database/seeders/UsersTableSeeder.php`).
+- Run `npm run dev`.
 
 Pages to use the app
 
