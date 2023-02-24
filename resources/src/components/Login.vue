@@ -2,13 +2,22 @@
     <section>
         <h1>Login</h1>
         <hr>
-        <h3>Mind Vue 3</h3>
+        <h3>Mind Front end</h3>
     </section>
     <section>
         <div class="login">
-            <input type="text" v-model="email" placeholder="Enter email" />
-            <input type="password" v-model="password" placeholder="Enter password" password-reveal />
-            <button v-on:click="login">Login</button>
+            <div class="mb-3">
+                <label for="email">Email :</label>
+                <input id="email" type="text" v-model="email" placeholder="Enter email" />
+                <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+            </div>
+            <div class="mb-3">
+                <label for="password">Password :</label>
+                <input id="password" type="password" v-model="password" placeholder="Enter password" password-reveal />
+            </div>
+            <div class="mb-3">
+                <button v-on:click="login" class="btn btn-primary">Login</button>
+            </div>
         </div>
     </section>
 </template>
@@ -50,3 +59,12 @@ export default {
     }
 }
 </script>
+
+<style>
+
+.login div {
+    margin-left: auto;
+    margin-right: auto;
+    width: 350px;
+}
+</style>

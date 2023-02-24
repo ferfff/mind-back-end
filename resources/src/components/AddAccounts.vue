@@ -3,11 +3,20 @@
     <div>
         <h1>Add accounts</h1>
     </div>
-    <form @submit.prevent="onSubmit" class="add">
-        <input type="text" name="name" id="" placeholder="Enter account name" v-model="account.name">
-        <input type="text" name="customer" placeholder="Enter customer name" v-model="account.customer">
-        <input type="text" name="responsible" placeholder="Enter responsible ID" v-model="account.responsible">
-        <button v-on:click="addAccount">Add new account</button>
+    <div class="login"></div>
+    <form @submit.prevent="onSubmit">
+        <div class="mb-3">
+            <input type="text" name="name" id="" placeholder="Enter account name" v-model="account.name">
+        </div>
+        <div class="mb-3">
+            <input type="text" name="customer" placeholder="Enter customer name" v-model="account.customer">    
+        </div>
+        <div class="mb-3">
+            <input type="text" name="responsible" placeholder="Enter responsible ID" v-model="account.responsible">    
+        </div>
+        <div class="mb-3">
+            <button v-on:click="addAccount" class="btn btn-primary">Add new account</button>
+        </div>
     </form>
 </template>
 

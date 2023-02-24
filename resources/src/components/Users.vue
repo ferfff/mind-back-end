@@ -1,14 +1,14 @@
 <template>
     <Header></Header>
     <div>
-        <h1>Register User</h1>
+        <h1>Users</h1>
     </div>
 </template>
 
 <script>
 import Header from './Header.vue'
 export default {
-    name: 'Register',
+    name: 'Users',
     components:{
         Header
     },

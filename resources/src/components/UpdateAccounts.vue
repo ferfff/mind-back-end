@@ -1,12 +1,20 @@
 <template>
     <Header></Header>
     <h1>Update Accounts</h1>
-    <div>
-        <form @submit.prevent="onSubmit" class="add">
-        <input type="text" name="name" id="" placeholder="Enter account name" v-model="account.name">
-        <input type="text" name="customer" placeholder="Enter customer name" v-model="account.customer">
-        <input type="text" name="responsible" placeholder="Enter responsible ID" v-model="account.responsible.id">
-        <button v-on:click="updateAccount">Update account</button>
+    <div class="login">
+        <form @submit.prevent="onSubmit">
+            <div class="mb-3">
+                <input type="text" name="name" placeholder="Enter account name" v-model="account.name">
+            </div>
+            <div class="mb-3">
+                <input type="text" name="customer" placeholder="Enter customer name" v-model="account.customer">        
+            </div>
+            <div class="mb-3">
+                <input type="text" name="responsible" placeholder="Enter responsible ID" v-model="account.responsible.id">
+            </div>
+            <div class="mb-3">
+                <button v-on:click="updateAccount" class="btn btn-primary">Update account</button>
+            </div>
     </form>
     </div>
     
@@ -27,25 +35,24 @@ export default {
                 name: '',
                 customer: '',
                 responsible: { id:'', name:''},
-            }
-        }
-    },
-    methods: {
-        async updateAccount()
-        {
-            let config = {
+            },
+            config : {
                 headers: {
                     Accept: "application/json",
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${localStorage.getItem('authtoken')}`
                 }
-            };
-
-            axios.put('/api/accounts/update/' + this.$route.params.id, {
+            },
+        }
+    },
+    methods: {
+        async updateAccount()
+        {
+            await axios.put('/api/accounts/update/' + this.$route.params.id, {
                 name: this.account.name,
                 customer: this.account.customer,
                 responsible: this.account.responsible.id,
-            }, config).then(r => {
+            }, this.config).then(r => {
                 if (r.status == 200 && r.data.status == "success") {
                     this.$router.push({name:'Home'})
                 }
@@ -60,19 +67,10 @@ export default {
         if (!user) {
             this.$router.push({name:'Login'})
         }
-        let config = {
-            headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${localStorage.getItem('authtoken')}`
-            }
-        }
-        await axios.get('/api/accounts/show/'+this.$route.params.id, config).then(r => {
+        await axios.get('/api/accounts/show/'+this.$route.params.id, this.config).then(r => {
             this.account = r.data.accounts;
             this.account.responsible = r.data.accounts.responsible[0];
         }).catch(error => {console.log(error)});
-        //await axios.put('/accounts/update', {}, config)
-        
     }
 }
 </script>

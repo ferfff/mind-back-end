@@ -264,9 +264,19 @@
                         "application/json": {
                             "schema": {
                                 "properties": {
-                                    "userstoadd": {
-                                        "type": "users",
-                                        "example": "{\"1\":{\"start_date\":\"2023-02-25\",\"end_date\":\"2023-02-28\"}"
+                                    "id": {
+                                        "type": "integer",
+                                        "example": "1"
+                                    },
+                                    "start_date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "1"
+                                    },
+                                    "end_date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "1"
                                     }
                                 },
                                 "type": "object"

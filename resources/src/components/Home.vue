@@ -1,39 +1,56 @@
 <template>
     <Header></Header>
     <div>
-        <h1>Hello {{ name }} this is the home page</h1>
+        <h3 class="text-primary">Hello {{ name }}</h3>
+        <router-link to="/accounts/add">
+            <button v-on:click="erase(item.id)" type="button" class="btn btn-success">Add acount</button>
+        </router-link> 
     </div>
-    <table border="1">
-        <tr>
-            <td>ID</td>
-            <td>Name</td>
-            <td>Responsible</td>
-            <td>Customer</td>
-            <td>Members</td>
-            <td>Update</td>
-            <td>Delete</td>
-        </tr>
-        <tr v-for="item in account" :key="item.id">
-            <td>{{ item.id }}</td>
-            <td>{{ item.name }}</td>
-            <td>{{ item.responsible[0].name }}</td>
-            <td>{{ item.customer }}</td>
-            <td>
-                <router-link :to="'/accounts/add/' + item.id">Add Members</router-link>
-                <ul v-for="member in item.members" :key="member.id">
-                    <li>
-                        {{ member.name }} <a v-on:click="deletemember(item.id, member.id)" href="#">D</a>
-                    </li>
-                </ul>
-            </td>
-            <td><router-link :to="'/accounts/update/' + item.id">Update</router-link></td>
-            <td>
-                <a v-on:click="erase(item.id)" href="#">Delete</a>
-            </td>
-        </tr>
-    </table>
-
-    <router-link to="/accounts/add">Add Account</router-link> 
+    <div class="table-responsive text-nowrap">
+        <table class="table table-light table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Responsible</th>
+                    <th scope="col">Customer</th>
+                    <th scope="col">Members</th>
+                    <th scope="col">Update</th>
+                    <th scope="col">Delete</th>
+                    <th scope="col">Logs</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="item in account" :key="item.id">
+                    <th  scope="row">{{ item.id }}</th>
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.responsible[0].name }}</td>
+                    <td>{{ item.customer }}</td>
+                    <td>
+                        <router-link :to="'/accounts/add/' + item.id" class="link-success">Add Members</router-link>
+                        <ul v-for="member in item.members" :key="member.id" class="list-group">
+                            <li class="list-group-item d-flex justify-content-between align-items-start">
+                                {{ member.name }} <a v-on:click="deletemember(item.id, member.id)" href="#" class="link-danger">Delete</a>
+                            </li>
+                        </ul>
+                    </td>
+                    <td>
+                        <router-link :to="'/accounts/update/' + item.id">
+                            <button type="button" class="btn btn-primary">Update</button>
+                        </router-link>
+                    </td>
+                    <td>
+                        <button v-on:click="erase(item.id)" type="button" class="btn btn-danger">Delete</button>
+                    </td>
+                    <td>
+                        <router-link :to="'/accounts/filter/' + item.id">
+                            <button type="button" class="btn btn-info">Logs</button>
+                        </router-link>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </template>
 
 <script>
@@ -106,9 +123,3 @@ export default {
     }
 }
 </script>
-
-<style>
-td{
-    width: 160px;
-}
-</style>

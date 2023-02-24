@@ -1,29 +1,51 @@
 <template>
     <Header></Header>
-    <div>
-        <h1>Add Members</h1>
-
-        <table border="1">
-            <tr>
-                <td>ID</td>
-                <td>Member Name</td>
-            </tr>
-            <tr v-for="item in members" :key="item.id">
-                <td>{{ item.id }}</td>
-                <td>{{ item.name }}</td>
-            </tr>
-        </table>
-        <form @submit.prevent="onSubmit" class="add">
-            <input type="text" name="id" id="" placeholder="Enter member id" v-model="id">
-            <input type="datetime" name="startdate" id="" placeholder="Start date" v-model="startdate">
-            <input type="datetime" name="enddate" id="" placeholder="End date" v-model="enddate">
-            <button v-on:click="addMember">Add Member</button>
-        </form>
+    <h1>Add Members</h1>
+    <div class="container">
+        <div class="row">
+            <section class="col-md-6">
+                <div class="table-responsive text-nowrap">
+                    <table class="table table-success table-striped w-auto">
+                        <thead>
+                            <tr>
+                                <th scope="col">ID</th>
+                                <th scope="col">Member Name</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="item in members" :key="item.id">
+                                <th scope="row">{{ item.id }}</th>
+                                <td>{{ item.name }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            <section class="col-md-6">
+                <div class="login">
+                    <form @submit.prevent="onSubmit">
+                        <div class="mb-3">
+                            <input type="text" name="id" id="" placeholder="Enter member id" v-model="id">
+                        </div>
+                        <div class="mb-3">
+                            <input type="datetime" name="startdate" id="" placeholder="Start date" v-model="startdate">    
+                        </div>
+                        <div class="mb-3">
+                            <input type="datetime" name="enddate" id="" placeholder="End date" v-model="enddate">    
+                        </div>
+                        <div class="mb-3">
+                            <button v-on:click="addMember" class="btn btn-primary">Add Member</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+        </div>
     </div>
 </template>
 
 <script>
 import Header from './Header.vue'
+import axios from 'axios'
 export default {
     name: 'AddMembers',
     components:{
