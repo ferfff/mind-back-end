@@ -39,7 +39,7 @@ export default {
         }
     },
     methods: {
-        addAccount() {
+        async addAccount() {
             let config = {
                 headers: {
                     Accept: "application/json",
@@ -48,7 +48,7 @@ export default {
                 }
             };
 
-            const result = axios.post('/api/accounts/create', {
+            await axios.post('/api/accounts/create', {
                 name: this.account.name,
                 customer: this.account.customer,
                 responsible: this.account.responsible,

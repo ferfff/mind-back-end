@@ -44,7 +44,7 @@
                     </td>
                     <td>
                         <router-link :to="'/accounts/filter/' + item.id">
-                            <button type="button" class="btn btn-info">Logs</button>
+                            <button type="button" class="btn btn-primary">Logs</button>
                         </router-link>
                     </td>
                 </tr>
