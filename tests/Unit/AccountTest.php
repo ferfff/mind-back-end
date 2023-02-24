@@ -399,6 +399,7 @@ class AccountTest extends TestCase
                         'start_date' => '2023-01-25',
                         'end_date' => '2023-01-28',
                         'username' => 'Member fake5',
+                        'active' => 1
                     ]
                 ],
             ]);

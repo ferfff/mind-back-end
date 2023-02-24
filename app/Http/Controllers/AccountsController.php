@@ -404,18 +404,24 @@ class AccountsController extends Controller
         $usersAccounts = DB::table('users_accounts')
             ->join('users', 'users.id', '=', 'users_accounts.user_id')
             ->join('accounts', 'accounts.id', '=', 'users_accounts.account_id')
-            ->select('users_accounts.start_date', 'users_accounts.end_date', 'users.name as username', 'accounts.name as accountname');
+            ->select(
+                'users_accounts.start_date', 
+                'users_accounts.end_date', 
+                'users.name as username', 
+                'accounts.name as accountname',
+                'users_accounts.active'
+            );
 
-        if ($request->has('account_id')) {
+        if ($request->has('account_id') && !empty($request->account_id)) {
             $usersAccounts->where('account_id', $request->account_id);
         }
-        if ($request->has('user_id')) {
+        if ($request->has('user_id') && !empty($request->user_id)) {
             $usersAccounts->where('user_id', $request->user_id);
         }
-        if ($request->has('start_date')) {
+        if ($request->has('start_date') && !empty($request->start_date)) {
             $usersAccounts->where('start_date', $request->start_date);
         }
-        if ($request->has('end_date')) {
+        if ($request->has('end_date') && !empty($request->end_date)) {
             $usersAccounts->where('end_date', $request->end_date);
         }
         
