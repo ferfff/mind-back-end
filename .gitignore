@@ -8,3 +8,4 @@ Thumbs.db
 .phpunit.result.cache
 node_modules
 /.phpunit.cache/
+/public/build/
